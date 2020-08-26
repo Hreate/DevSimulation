@@ -86,7 +86,7 @@ cargo check
      let tup: (i32, f32, char) = (-3, 3.69, '好');
      let tup = (-3, 3.69, '好');
      println!("{}", tup.0)
-     let (x, y, z) = tup; // 元组拆解
+     let (x, y, z) = tup; // 元组拆解，x、y、z三个变量分别被赋值
      ```
 
    * 结构体
@@ -458,5 +458,155 @@ struct B{};
 #[derive(Debug)] // 在结构体声明上
 println!("{:?}", a); // 完整打印结构体实例
 println!("{:#?}", a); // 完整打印结构体实例，字段自动换行
+```
+
+
+
+#### 2.2.9 方法
+
+```rust
+#[derive(Debug)]
+struct Dog {
+    name: String,
+    weight: f32,
+    height: f32
+}
+
+impl Dog {
+    // self 类似于 java 中的 this
+    fn get_name(&self) -> &str {
+        &(self.name[..])
+    }
+
+    fn get_weight(&self) -> f32 {
+        self.weight
+    }
+
+    // fn get_height(&self) -> f32 {
+    //     self.height
+    // }
+
+    fn yap() {
+        println!("oh oh oh");
+    }
+}
+
+impl Dog {
+    fn get_height(&self) -> f32 {
+        self.height
+    }
+}
+
+fn main() {
+    let dog = Dog {
+        name: String::from("diudiu"),
+        weight: 12.0,
+        height: 20.0
+    };
+    println!("dog = {:#?}", dog);
+    println!("name = {}", dog.get_name());
+    println!("weight = {}", dog.get_weight());
+    println!("height = {}", dog.get_height());
+    Dog::yap();
+    println!("Hello, world!");
+}
+```
+
+
+
+### 2.3 枚举与模式匹配
+
+#### 2.3.1 类似于c语言的方式定义
+
+```rust
+enum IpAddrKind {
+    V4,
+    V6
+}
+struct IpAddr {
+    kind: IpAddrKind,
+    address: String
+}
+let i1 = IpAddr {
+    kind: IpAddrKind::V4,
+    address: String::from("127.0.0.1")
+};
+```
+
+
+
+#### 2.3.2 rust语言提倡的方式定义
+
+```rust
+enum IpAddr2 {
+    V4(String),
+    V6(String)
+}
+let i1 = IpAddr2::V4(String::from("127.0.0.1"));
+```
+
+
+
+#### 2.3.3 可以是不同类型
+
+```rust
+enum IpAddr3 {
+    V4(u8, u8, u8, u8), // 元组
+    V6(String)
+}
+let i1 = IpAddr3::V4(127, 0, 0, 1);
+```
+
+
+
+#### 2.3.4 经典用法
+
+```rust
+enum Message {
+    Quit,
+    Move{x: i32, y: i32},
+    Write(String),
+    Change(i32, i32, i32)
+}
+// 每项分别等同于
+// struct Quit; // 类单元结构体
+// struct Move {
+// x: i32,
+// y: i32,
+// }
+// struct Write(String)
+// struct Change(i32, i32, i32)
+```
+
+
+
+#### 2.3.5 枚举类型的方法以及match
+
+```rust
+impl Message {
+    fn show(&self) {
+        match self {
+            Message::Quit => println!("Quit"),
+            Message::Move {x, y} => println!("Move x = {}, Move y = {}", x, y),
+            Message::Change(a, b, c) => println!("Change a = {}, Change a = {}, Change a = {}", a, b, c),
+            // _ => println!("Write"), // 其他情况匹配
+            Message::Write(s) => println!("Write = {}", s)
+        }
+    }
+}
+
+fn main() {
+    let quit = Message::Quit;
+    quit.show();
+    
+    let mo = Message::Move{x: 10, y: 20};
+    mo.show();
+    
+    let wri = Message::Write(String::from("Hello"));
+    wri.show();
+
+    let cha = Message::Change(1, 2, 3);
+    cha.show();
+}
 ```
 
