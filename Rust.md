@@ -376,7 +376,7 @@ let xiaoming = User {
     name: String::from("xiaoming"),
     count: String::from("80001000"),
     nonce: 10000,
-    active: true
+    active: true,
 };
 ```
 
@@ -389,7 +389,7 @@ let mut xiaohuang = User {
     name: String::from("xiaohuang"),
     count: String::from("80001000"),
     nonce: 10000,
-    active: true
+    active: true,
 };
 xiaohuang.nonce = 20000;
 ```
@@ -408,7 +408,7 @@ let user1 = User {
     name,
     count,
     nonce,
-    active
+    active,
 };
 ```
 
@@ -419,7 +419,7 @@ let user1 = User {
 ```rust
 let user2 = User {
     name: String::from("user2"), // 重新给 name 字段赋值，其余字段赋予与 user1 相对应的值。因为 user2 的 name 字段是重新赋值，所以 user1 的 name 字段的所有权没有进行转移，依旧可以使用。
-    ..user1 // 使用 user1 给 user2 赋值后，引用类型字段的所有权会转移，user1 中引用类型字段将不能再使用，非引用类型字段仍可以使用。
+    ..user1, // 使用 user1 给 user2 赋值后，引用类型字段的所有权会转移，user1 中引用类型字段将不能再使用，非引用类型字段仍可以使用。
 };
 println!("{:?}", user2);
 ```
@@ -469,7 +469,7 @@ println!("{:#?}", a); // 完整打印结构体实例，字段自动换行
 struct Dog {
     name: String,
     weight: f32,
-    height: f32
+    height: f32,
 }
 
 impl Dog {
@@ -501,7 +501,7 @@ fn main() {
     let dog = Dog {
         name: String::from("diudiu"),
         weight: 12.0,
-        height: 20.0
+        height: 20.0,
     };
     println!("dog = {:#?}", dog);
     println!("name = {}", dog.get_name());
@@ -521,15 +521,15 @@ fn main() {
 ```rust
 enum IpAddrKind {
     V4,
-    V6
+    V6,
 }
 struct IpAddr {
     kind: IpAddrKind,
-    address: String
+    address: String,
 }
 let i1 = IpAddr {
     kind: IpAddrKind::V4,
-    address: String::from("127.0.0.1")
+    address: String::from("127.0.0.1"),
 };
 ```
 
@@ -540,7 +540,7 @@ let i1 = IpAddr {
 ```rust
 enum IpAddr2 {
     V4(String),
-    V6(String)
+    V6(String),
 }
 let i1 = IpAddr2::V4(String::from("127.0.0.1"));
 ```
@@ -552,7 +552,7 @@ let i1 = IpAddr2::V4(String::from("127.0.0.1"));
 ```rust
 enum IpAddr3 {
     V4(u8, u8, u8, u8), // 元组
-    V6(String)
+    V6(String),
 }
 let i1 = IpAddr3::V4(127, 0, 0, 1);
 ```
@@ -566,16 +566,16 @@ enum Message {
     Quit,
     Move{x: i32, y: i32},
     Write(String),
-    Change(i32, i32, i32)
+    Change(i32, i32, i32),
 }
 // 每项分别等同于
 // struct Quit; // 类单元结构体
 // struct Move {
 // x: i32,
 // y: i32,
-// }
-// struct Write(String)
-// struct Change(i32, i32, i32)
+// };
+// struct Write(String);
+// struct Change(i32, i32, i32);
 ```
 
 
@@ -608,5 +608,374 @@ fn main() {
     let cha = Message::Change(1, 2, 3);
     cha.show();
 }
+```
+
+
+
+#### 2.3.6 Option
+
+1. ##### Option是标准库定义的一个枚举，形式：
+
+   ```rust
+   enum Option<T> {
+       Some(T),
+       None,
+   }
+   ```
+
+2. ##### 使用方式
+
+   ```rust
+   fn main() {
+       let some_number = Some(5);
+       let some_string = Some(String::from("a string"));
+       let absent_number : Option<i32> = None;
+   
+       let x: i32 = 5;
+       let y: Option<i32> = Some(5);
+       let mut temp = 0;
+       match y {
+           Some(i) => temp = i,
+           None => println!("do nothing"),
+       }
+       let sum = x + temp;
+       println!("sum = {}", sum);
+   
+       let result = plus_one(&y);
+       match result {
+           Some(i) => println!("result = {}", i),
+           None => println!("nothing"),
+       }
+   
+       if let Some(value) = plus_one(&absent_number) {
+           println!("value = {}", value);
+       } else {
+           println!("do nothing");
+       }
+   
+       println!("y = {}", y.unwrap());
+   
+       println!("Hello World!");
+   }
+   
+   fn plus_one(x: &Option<i32>) -> Option<i32> {
+       match x {
+           None => None,
+           Some(x) => Some(x+1),
+       }
+   }
+   ```
+
+
+
+### 2.4 Vector
+
+#### 2.4.1 创建空的vector
+
+```rust
+let mut v: Vec<i32> = Vec::new();
+```
+
+
+
+#### 2.4.2 创建包含初始值的vector
+
+```rust
+// 使用宏创建包含初始值的vector
+let v = vec![1, 2, 3];
+println!("v = {:?}", v);
+```
+
+
+
+#### 2.4.3 丢弃vector
+
+离开作用域自动丢弃
+
+
+
+#### 2.4.4 读取元素
+
+```rust
+// 通过下标获取
+let one:&i32 = &v[0];
+
+// 使用 match 和 get 函数获取，推荐使用该方式，可以处理索引越界情况
+match v.get(1) {
+    Some(value) => println!("value = {}", value),
+    _ => println!("do nothing"),
+}
+```
+
+
+
+#### 2.4.5 更新
+
+```rust
+let mut v1: Vec<i32> = Vec::new();
+v1.push(1);
+v1.push(2);
+v1.push(3);
+```
+
+
+
+#### 2.4.6 遍历
+
+* ##### 不可变的遍历
+
+  ```rust
+  for i in &v1 {
+      println!("i = {}", i);
+  }
+  ```
+
+  
+
+* ##### 可变的遍历
+
+  ```rust
+  for i in &mut v1 {
+      *i += 1;
+      println!("i = {}", i)
+  }
+  println!("v1 = {:?}", v1);
+  ```
+
+  
+
+#### 2.4.7 使用枚举
+
+通过使用枚举，在vector中存入不同类型的值
+
+```rust
+#[derive(Debug)]
+enum Content {
+    Text(String),
+    Float(f32),
+    Int(i32),
+}
+let c = vec![
+    Content::Text(String::from("string")),
+    Content::Int(-1),
+    Content::Float(0.001),
+];
+println!("c = {:?}", c);
+```
+
+
+
+#### 2.4.8 补充
+
+```rust
+let mut v = vec![1, 2, 3, 4, 5];
+let first = &v[0]; // 使用不可变引用
+v.push(6); // 使用可变引用（借用）
+// println!("first = {}", first); // 该行会报错。之前的不可变引用不能再使用，遵循上文引用与借用（可变引用）的使用规则
+```
+
+
+
+### 2.5 字符串(String、&str)
+
+String 是栈上指向的堆上的一个地址，原理类似Vector
+
+&str 是引用自“预分配文本(preallocated text)”的字符串切片，这个预分配文本存储在可执行程序的只读内存中。
+
+#### 2.5.1 创建一个空 String
+
+```rust
+let mut s0 = String::new();
+```
+
+
+
+#### 2.5.2 通过字面值创建一个 String
+
+使用字面值创建的是 &str
+
+1. ##### 使用 String::from()
+
+   ```rust
+   let s1: String = String::from("init something");
+   ```
+
+   
+
+2. ##### 使用 &str 的方式，&str 与 String 的转换
+
+   ```rust
+   // let s1: &str = "init something";
+   let s1: String = "init something".to_string();
+   ```
+
+   
+
+#### 2.5.3 更新 String
+
+1. ##### push_str
+
+   ```rust
+   let mut s2 = String::from("hello");
+   s2.push_str(" world");
+   let ss = "!".to_string();
+   s2.push_str(&ss);
+   println!("s2 = {}", s2);
+   ```
+
+   
+
+2. ##### push
+
+   只能添加一个字符（char），可以是一个汉字：
+
+   ```rust
+   let mut s3 = String::from("tea");
+   s3.push('m');
+   println!("s3 = {}", s3);
+   ```
+
+   
+
+3. ##### 使用  `+`  合并字符串
+
+   ```rust
+   let s4 = "hello".to_string();
+   let s5 = String::from(" world");
+   let s6 = s4 + &s5;
+   println!("s6 = {}", s6);
+   // println!("s4 = {}", s4); // s4 不能再继续使用了，s4 的所有权已经转移给 s6 了
+   ```
+
+   
+
+4. ##### 使用 format
+
+   ```rust
+   let s7 = String::from("tic");
+   let s8 = String::from("tac");
+   let s9 = String::from("toe");
+   // 使用 format 宏，按照指定格式合并字符串
+   let s10 = format!("{}-{}-{}", s7, s8, s9);
+   println!("s10 = {}", s10);
+   // 依旧可以使用，宏不会转移所有权
+   println!("s7 = {}", s7);
+   println!("s8 = {}", s8);
+   println!("s9 = {}", s9);
+   ```
+
+   
+
+#### 2.5.4  String、&str 索引
+
+* rust 中字符串采用 UTF-8 编码
+* 不能直接通过索引获取
+
+
+
+#### 2.5.5 遍历
+
+1. ##### chars
+
+   ```rust
+   let s11 = String::from("你好");
+   for c in s11.chars() {
+       println!("c = {}", c);
+   }
+   println!("s11 = {}", s11);
+   ```
+
+   
+
+2. ##### bytes
+
+   打印出的都是字节的整数
+
+   ```rust
+   for b in s11.bytes() {
+       println!("b = {}", b);
+   }
+   println!("s11 = {}", s11);
+   ```
+
+   
+
+### 2.6 HashMap
+
+#### 2.6.1 创建 HashMap
+
+```rust
+// 第一种方式
+let mut scores: HashMap<String, i32> = HashMap::new();
+scores.insert(String::from("Blue"), 10);
+scores.insert(String::from("Red"), 20);
+println!("scores = {:?}", scores);
+
+// 第二种方式
+let keys = vec![String::from("Blue"), String::from("Red")];
+let values = vec![10, 20];
+let scores: HashMap<&String, &i32> = keys.iter().zip(values.iter()).collect();
+println!("scores = {:?}", scores);
+```
+
+
+
+#### 2.6.2 读取
+
+```rust
+let key = String::from("Blue");
+let value = scores.get(&key); // get 返回的是一个Option
+match value {
+    Some(v) => println!("v = {}", v),
+    None => println!("None"),
+}
+// if-let 语法，还有 while-let 语法
+if let Some(v) = scores.get(&key) {
+    println!("v = {}", v);
+}
+```
+
+
+
+#### 2.6.3 遍历
+
+```rust
+for (key, value) in &scores {
+    println!("{}, {}", key, value);
+}
+```
+
+
+
+#### 2.6.4 更新
+
+```rust
+let mut map = HashMap::new();
+map.insert(String::from("one"), 1);
+map.insert(String::from("two"), 2);
+map.insert(String::from("three"), 3);
+map.insert(String::from("one"), 11); // 键相同会进行覆盖
+map.entry(String::from("one")).or_insert(111); // 判断键不存在时，才会进行插入
+println!("map = {:?}", map);
+```
+
+examp：（统计字符串中单词出现的个数）
+
+```rust
+let text = "hello world wonderful world";
+let mut map:HashMap<&str, i32> = HashMap::new(); // 手动标注 HashMap 的泛型
+for word in text.split_whitespace() {
+    let count = map.entry(word).or_default(); // or_default 自动插入 value 对应类型的默认"零值"
+    *count += 1;
+}
+println!("map = {:?}", map);
+
+let text = "hello world wonderful world";
+let mut map = HashMap::new(); // 根据下面插入值，自动推导 HashMap 泛型
+for word in text.split_whitespace() {
+    let count = map.entry(word).or_insert(0); // 插入0
+    *count += 1;
+}
+println!("map = {:?}", map);
 ```
 
